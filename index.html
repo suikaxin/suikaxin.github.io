@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Suika&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Suika&#39;s Blog">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="Suika&#39;s Blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Suika&#39;s Blog">
+  
+    <link rel="alternate" href="/atom.xml" title="Suika&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Suika&#39;s Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-跨页面(Tab和window)通信" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/17/跨页面(Tab和window)通信/" class="article-date">
+  <time datetime="2017-10-17T11:46:00.000Z" itemprop="datePublished">2017-10-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/17/跨页面(Tab和window)通信/">跨页面(Tab和window)通信</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文介绍两种跨页面通信解决方案，可应用于以下四个使用场景。</p>
+<h3 id="场景一"><a href="#场景一" class="headerlink" title="场景一"></a>场景一</h3><p>编辑场景，在页面 A打开B页面， 在B页面操作数据，关闭B同时刷新页面 A 的数据；</p>
+<p>用户通过一些筛选条件过滤出一些主题，且翻到了某一页，这时对某个主题进行编辑，编辑页是一个非常复杂的页面，不适合弹窗展示，因此打开了一个新的页面。</p>
+<p>用户点击编辑，新打开一个页面，注意是window.open打开一个新的tab，而非在原来页面上更换url。</p>
+<p>用户点击“保存”，更新了数据。</p>
+<p>这时，合理的交互可以是：关闭新打开的编辑页，回到列表页，同时保持列表页的筛选条件和页码不变，并局部刷新列表的数据。</p>
+<p><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/8731c443-6ed0-4900-8c33-6e419ed51046.png" alt="image.png | center | 2866x1538"></p>
+<p><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/085c6a67-9d1b-4fe0-a8b0-f1d0f8cb29bf.png" alt="image.png | center | 2240x940"></p>
+<h3 id="场景2"><a href="#场景2" class="headerlink" title="场景2"></a>场景2</h3><p>编辑场景，在页面 A打开B页面， 在B页面做取消操作，关闭B同时回到A，A不刷新；</p>
+<p>用户进行编辑主题操作（前置操作同场景1），并点击“取消”。</p>
+<p>合理的交互可以是：关闭新打开的编辑页，列表页停留在<span style="background-color:#E4F7FF;">进入编辑页前</span>的状态，且不刷新数据。</p>
+<h3 id="场景3"><a href="#场景3" class="headerlink" title="场景3"></a>场景3</h3><p>添加场景，改变页面 A到B，B做数据操作提交或取消，页面由B回到A；</p>
+<p>用户进行添加主题操作，并点击“保存”。</p>
+<p>合理的交互可以是：改变当前列表页的url为添加页，在用户点击“保存”或“取消”时，跳转回列表页，筛选条件和页码都是初始状态（从1开始）。</p>
+<h3 id="场景4"><a href="#场景4" class="headerlink" title="场景4"></a>场景4</h3><p>同页面间的tab切换，TabA更新数据后，切换到TabB，B的数据需要同步</p>
+<p>用户进入标签系统，在可用标签，待审核标签和不可用标签Tab之间切换，在某个tab页面操作完数据后，其他的tab内的数据需要同步。与前三个场景不同的是，前三个场景中，编辑页和列表页是两个不同的页面，而场景4中的tab共属于同一个页面,不同的tab内是不同的组件。</p>
+<p><img src="https://private-alipayobjects.alipay.com/alipay-rmsdeploy-image/skylark/png/63ad2dc0-22eb-42f1-9955-227026a23754.png" alt="image.png | center | 2290x928"></p>
+<h3 id="模型一：不同页面间的通信-storage事件触发"><a href="#模型一：不同页面间的通信-storage事件触发" class="headerlink" title="模型一：不同页面间的通信-storage事件触发"></a>模型一：不同页面间的通信-storage事件触发</h3><p><code>window</code>有一个<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/StorageEvent" target="_blank" rel="external">StorageEvent</a>，每当<code>localStorage</code>改变的时候可以触发这个事件。（这个原理就像你给一个<code>DOM</code>绑定了<code>click</code>事件，当你点击它的时候，就会自动触发。）</p>
+<p>每当一个页面改变了<code>localStorage</code>的值，都会触发<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/StorageEvent" target="_blank" rel="external">StorageEvent</a>事件。也就是说可以通过改变<code>localStorage</code>的值，来实现浏览器中跨页面( tab / window )之间的通讯。记住这个事件只有在<code>localStorage</code>发生<strong>改变</strong>的时候才会被触发，如果没改变则<strong>不会触发</strong>此事件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">//列表页 index.js 相关代码</div><div class="line">...</div><div class="line">componentDidMount()&#123;</div><div class="line">    //添加对storge的监听事件 及时刷新页面</div><div class="line">    window.addEventListener(&apos;storage&apos;, (event)=&gt;&#123;</div><div class="line">      if(event.key === &apos;update_scg_list&apos;)&#123;</div><div class="line">        //页面更新操作</div><div class="line">        this.refresh();</div><div class="line">      &#125;</div><div class="line">    &#125;);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">//编辑页需要以window.open的方式打开编辑页，只有window.open打开的页面才能适用window.top.close()关闭</div><div class="line">//antd table设置columns</div><div class="line">this.columns = [</div><div class="line">      ...</div><div class="line">     &#123;</div><div class="line">         title: &quot;操作&quot;,</div><div class="line">         key: &quot;action&quot;,</div><div class="line">         render: record =&gt; &#123;</div><div class="line">              return &lt;a key=&quot;edit&quot; </div><div class="line">                          onClick=&#123;()=&gt;window.open(&apos;...&apos;)&#125; target=&apos;_blank&apos;</div><div class="line">                        &gt;</div><div class="line">                           编辑</div><div class="line">                        &lt;/a&gt;</div><div class="line">         &#125;</div><div class="line">     &#125;</div><div class="line">]</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">//编辑页 index.js 相关代码</div><div class="line">...</div><div class="line">//点击取消 回到列表页面 场景3</div><div class="line">  handleCancelSubmit = () =&gt; &#123;</div><div class="line">    //编辑 场景1</div><div class="line">    if(SCG_DATA)&#123;</div><div class="line">      window.top.close();</div><div class="line">    &#125;</div><div class="line">    //添加 场景2</div><div class="line">    else&#123;</div><div class="line">      const type = this.props.type || &quot;&quot;;</div><div class="line">      location.href = `/scg/video/option.htm?from=baoluo&amp;type=$&#123;type&#125;`;</div><div class="line">    &#125;</div><div class="line">  &#125;;</div><div class="line">//更新localstorage 通知列表页面刷新 同时关闭自己</div><div class="line">  afterSaveProcess = ()=&gt;&#123;</div><div class="line">    if (localStorage) &#123;</div><div class="line">      //为保证每次页面A都执行，此处需要设置一个随机字符串</div><div class="line">      localStorage.setItem(&apos;update_scg_list&apos;, randomId());</div><div class="line">      if(SCG_DATA)&#123;</div><div class="line">        setTimeout(()=&gt;&#123;</div><div class="line">          window.top.close();</div><div class="line">        &#125;, 2000);</div><div class="line">      &#125;</div><div class="line">      else&#123;</div><div class="line">        location.href = `/scg/video/option.htm?from=baoluo&amp;type=$&#123;this.props.type&#125;`;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">...</div><div class="line">//提交表单 场景1+2</div><div class="line">submit = value =&gt; &#123;</div><div class="line">  ...</div><div class="line">  IO.post(url, params)</div><div class="line">      .then(response =&gt; &#123;</div><div class="line">           if (response.success) &#123;</div><div class="line">           ...</div><div class="line">           //提交成功后，通知列表页</div><div class="line">           this.afterSaveProcess();</div><div class="line">       &#125;</div><div class="line">       ...</div><div class="line">   &#125;)</div><div class="line">   ...</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p><strong>注意这个方案在chrome中只能在不同页面之间生效，同个页面中监听事件无效。</strong><br>参考：<a href="https://github.com/lin-xin/blog/issues/11" target="_blank" rel="external">https://github.com/lin-xin/blog/issues/11</a></p>
+<h3 id="模型二：同页面消息通信-观察者模式"><a href="#模型二：同页面消息通信-观察者模式" class="headerlink" title="模型二：同页面消息通信-观察者模式"></a>模型二：同页面消息通信-观察者模式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line">//全局观察tab切换</div><div class="line">//事件集合</div><div class="line">let events = &#123;&#125;;</div><div class="line">// 发布事件</div><div class="line">const trigger = (event, ...data) =&gt; &#123;</div><div class="line">    const fns = events[event];</div><div class="line">    // 如果没有对应方法</div><div class="line">    if (!fns || fns.length === 0) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">    // 如果存在对应方法，依次执行</div><div class="line">    for ( let i = 0; i &lt;= fns.length - 1; i++) &#123;</div><div class="line">        fns[i](...data);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">// 监听事件</div><div class="line">const on = (event, fn) =&gt; &#123;</div><div class="line">    // 如果尚没有该事件，创建一个数组来存储对应的方法</div><div class="line">    if (!events[event]) &#123;</div><div class="line">        events[event] = [];</div><div class="line">    &#125;</div><div class="line">    events[event].push(fn);</div><div class="line">&#125;;</div><div class="line">// 取消监听事件</div><div class="line">const off = (event, fn) =&gt; &#123;</div><div class="line">    const fns = events[event];</div><div class="line">    // 如果不存在事件集合</div><div class="line">    if (!fns) &#123;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">    // 如果不存在事件</div><div class="line">    if (!fn &amp;&amp; fns) &#123;</div><div class="line">        fns.length = 0;</div><div class="line">    &#125;</div><div class="line">    // 取消指定事件</div><div class="line">    else &#123;</div><div class="line">        for (let i = fns.length - 1; i &gt;= 0; i--) &#123;</div><div class="line">            if (fn === fns[i]) &#123;</div><div class="line">                fns.splice(i, 1);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">const PubSub = &#123;</div><div class="line">    on: on,</div><div class="line">    off: off,</div><div class="line">    trigger: trigger</div><div class="line">&#125;;</div><div class="line">export default PubSub;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//页面入口 相关代码</div><div class="line">...</div><div class="line">//tab切换时触发</div><div class="line">onChange = activeKey =&gt; &#123;</div><div class="line">    PubSub.trigger(&apos;tagChange&apos;,activeKey)</div><div class="line">    this.setState(&#123; activeKey &#125;)</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">//每个tab组件中添加订阅事件</div><div class="line">componentDidMount()&#123;</div><div class="line">   //每次tab切换时，接收当前的activekey，如果是自己的key就刷新自己</div><div class="line">    PubSub.on(&apos;tagChange&apos;,(activeKey)=&gt;&#123;</div><div class="line">      if(activeKey === &apos;2&apos;)&#123;</div><div class="line">        this.refresh();</div><div class="line">      &#125;</div><div class="line">    &#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在不使用redux等状态管理框架的情况下，多页面应用可使用模式一和模式二两种方式解决通信问题， 模式一适用于场景一，场景2和场景3；<br>模式二适用于场景四。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/10/17/跨页面(Tab和window)通信/" data-id="cj8vjsa900000z7d3q61x3rdc" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/js/">js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/react/">react</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/17/hello-world/" class="article-date">
+  <time datetime="2017-10-17T11:20:47.000Z" itemprop="datePublished">2017-10-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/17/hello-world/">Hello World</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/10/17/hello-world/" data-id="cj8vjsa970001z7d3s4ufja1j" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/">react</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/js/" style="font-size: 10px;">js</a> <a href="/tags/react/" style="font-size: 10px;">react</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">October 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/10/17/跨页面(Tab和window)通信/">跨页面(Tab和window)通信</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/17/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 Suika Yu<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
